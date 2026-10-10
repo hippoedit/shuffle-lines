@@ -1,0 +1,63 @@
+Application.AddScriptInfo("7CA8A260-6227-4D2C-B4B0-0DE26E512365", "Shuffle Lines", "1.1", "Shuffles (randomize) selected lines", "HippoEDIT.com", "supportbox@hippoedit.com", "http://wiki.hippoedit.com/plugins/shuffle_lines");
+
+//${ region Icons }
+var nIcon = Application.RegisterImageString(
+'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACkklEQVR4Xp2SX0iUaRTGf9/HWES0UFRr\
+ rZF9WVCtEaySFNVaMzmmjRcFUVpd7l7VTeGK4Uo5OYraBFFZ+GepvVm6sMx1V9LYnWpEy4ttKYpx1BFK\
+ sl1plcbRme/s9zJTA11JBx7On+c87+F9z6sVXWBOJoBpctsUXLqGpuugATqACJiiPJ9YkovFIBLFVXuo\
+ kelZROUC6DGTNosQVZyJcsvKEeJQ8crFhoRnkPcWcgzoH/yOclcZSmOaoEdjFF0qLsd7uJSD2XsOpC0x\
+ xKqpiag4yzDwlpRy8egPHNh6hqgGQ/9UczKvWA0Qm6ZB/4ib8CzkZFSwdFE2vz39RQAKt5SwJtWGP1iB\
+ 6gPQbRZ0mAiH4jkxhlt9EJqAvpGzrFo2xa4NdgBWr5iiL1RB6C10/wWj4zB/Prx7b3DT56PzNFkAm4Bv\
+ HG5ClW1Icy/yMFgszb6DcrwJqexA7FUMq568GsTTlSLKq9x1AVBrdDUA8PVuN5HyNqSpD+kJFMj1P52S\
+ W0VEDdlfD46z+D+KG+Ja1CkigqOal629BfJ9iyHld5CmAeT3wA658sc2sbhniR75e6xR7JYvqItrKayj\
+ RxFXH2yXe6M75cYL5Mg1pKITaXmKtAcyxXt/o3x7zqr9Gq/dHyxTh0hhPWj5NciJYxuIRRcwHh4gNAqv\
+ QwYAqV8FSU+DL+ZlEDUnMUVjMjKGrsFyWzGX23/GhgYT5nOiAiOv4JGfN11ngvsA9rrp0HS+NNIDmImP\
+ pSXW+G9ijTireJxfizhrEEclvUCmehwFFed7GM/zI/dyE9DiNdvyF5PfBMA61WQwLq4OAlg8wde\
+ Xbf60TxxJteIpgRzten/6ElZSO7dU2RZuid8hq1Vk0ka/wM74USQvhMjqgAAAABJRU5ErkJggg==');
+//${ endregion }
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+var vCommand = new Command("Edit.Shuffle", "Shuffle Lines", "Shuffle (randomize) selected lines", nIcon);
+vCommand.onEnabled = function() {
+	return ActiveDocument !== null && ActiveDocument.ReadOnly !== true && !ActiveView.Selection.IsEmpty;
+}
+vCommand.onExecute = function() {
+	__include("he_utils.js");
+	var sel = ActiveView.Selection;
+	if ( sel.End.Pos && sel.End.Line != ActiveDocument.LineCount - 1 )
+		sel.End = new Position(sel.End.Line + 1, 0);
+		
+	var text = shuffle(ax2js(ActiveDocument.GetLines(sel, true))).join("");
+	ActiveView.Position = ActiveDocument.ReplaceText(sel, text, AddUndoActionType("Shuffle lines"));
+}
+
+Application.RegisterCommand(vCommand);
+
+////////////////////////////////////////////////////////////////////////
+// Update main menu with our items
+Application.onInitMainMenu = function (bUpdate){
+	if ( !bUpdate ) {
+		var menu_location = this.GetMenuItemPos("Edit.SortDescending");
+		if (menu_location.Menu !== null && menu_location.Position != -1) {
+			menu_location.Menu.InsertItem(menu_location.Position + 1, "", vCommand);
+		}
+	}
+}
