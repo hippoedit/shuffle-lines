@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.hippoedit.com/xml/package-info">
+<package-info xmlns="http://www.hippoedit.com/xml/package-info" xmlns:smf="http://www.hippoedit.com/">
+	<id>7CA8A260-6227-4D2C-B4B0-0DE26E512365</id>
+	<name>Shuffle Lines</name>
+	<version>1.1</version>
+	<description>Shuffles (randomize) selected lines</description>
+	<author>HippoEDIT.com</author>
+	<email>supportbox@hippoedit.com</email>
+	<homepage>http://wiki.hippoedit.com/plugins/shuffle_lines</homepage>
+	<memo></memo>
+	<install>
+		<readme type="inline">This will install Shuffle Lines plugin for HippoEDIT.</readme>
+		<require-file name="shuffle lines.hejs" destination="%{plugins}%/shuffle lines.hejs" />
+		<install-plugin path="%{plugins}%/shuffle lines.hejs"/>
+	</install>
+	<uninstall>
+		<readme type="inline">This will uninstall Shuffle Lines plugin for HippoEDIT.</readme>
+		<uninstall-plugin id="7CA8A260-6227-4D2C-B4B0-0DE26E512365"/>
+		<remove-file name="%{plugins}%/shuffle lines.hejs" />
+	</uninstall>
+</package-info>
